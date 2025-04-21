@@ -6,29 +6,50 @@
 #    By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/13 21:47:43 by bde-luce          #+#    #+#              #
-#    Updated: 2025/04/17 15:50:16 by bde-luce         ###   ########.fr        #
+#    Updated: 2025/04/21 18:06:48 by bde-luce         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 NAME = philo
 
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -g #-fsanitize=thread
+CFLAGS = -Wall -Wextra -Werror -g
+INCLUDES = -Iincludes
 
-SRC = philo.c
+SRC_DIR = sources
+OBJ_DIR = objs
 
-OBJ = $(SRC:.c=.o)
+SRC = utils.c check_args.c init.c routine_actions.c routine_control.c \
+      handle_threads.c philo.c
+
+SRC_FILES = $(addprefix $(SRC_DIR)/, $(SRC))
+OBJ_FILES = $(SRC:%.c=$(OBJ_DIR)/%.o)
+
+GREEN = \033[0;32m
+YELLOW = \033[1;33m
+RESET = \033[0m
 
 all: $(NAME)
 
-$(NAME): $(OBJ)
-	$(CC) $(CFLAGS) -o $(NAME) $(OBJ) -lpthread
+$(NAME): $(OBJ_FILES)
+	@echo "$(YELLOW)Linking executable...$(RESET)"
+	@$(CC) $(CFLAGS) -o $(NAME) $(OBJ_FILES) -lpthread
+	@echo "$(GREEN)Build complete: $(NAME)$(RESET)"
+
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
+	@echo "$(YELLOW)Compiling $<...$(RESET)"
+	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+$(OBJ_DIR):
+	@mkdir -p $(OBJ_DIR)
 
 clean:
-	rm -f $(OBJ)
+	@echo "$(YELLOW)Cleaning object files...$(RESET)"
+	@rm -rf $(OBJ_DIR)
 
 fclean: clean
-	rm -f $(NAME)
+	@echo "$(YELLOW)Removing executable...$(RESET)"
+	@rm -f $(NAME)
 
 re: fclean all
 
