@@ -6,51 +6,59 @@
 #    By: bde-luce <bde-luce@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2025/04/13 21:47:43 by bde-luce          #+#    #+#              #
-#    Updated: 2025/04/21 18:06:48 by bde-luce         ###   ########.fr        #
+#    Updated: 2026/03/23 14:40:19 by bde-luce         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
+
+MAKEFLAGS += --no-print-directory
 
 NAME = philo
 
 CC = cc
 CFLAGS = -Wall -Wextra -Werror -g
-INCLUDES = -Iincludes
 
-SRC_DIR = sources
-OBJ_DIR = objs
+SRC_DIR = src
+OBJ_DIR = obj
+INC_DIR = inc
 
-SRC = utils.c check_args.c init.c routine_actions.c routine_control.c \
-      handle_threads.c philo.c
+INCLUDES = -I$(INC_DIR)
 
-SRC_FILES = $(addprefix $(SRC_DIR)/, $(SRC))
-OBJ_FILES = $(SRC:%.c=$(OBJ_DIR)/%.o)
+SRCS =	utils.c check_args.c init.c routine_actions.c routine_control.c \
+		handle_threads.c philo.c
 
-GREEN = \033[0;32m
-YELLOW = \033[1;33m
-RESET = \033[0m
+OBJS = $(addprefix $(OBJ_DIR)/, $(SRCS:.c=.o))
+
+MSG_BUILD = @echo "🔨 Building $(NAME)..."
+MSG_DONE = @echo "✅ Done"
+MSG_CLEAN = @echo "🧹 Cleaning object files..."
+MSG_FCLEAN = @echo "🧼 Removing executable..."
+MSG_RE = @echo "🔁 Rebuilding..."
 
 all: $(NAME)
 
-$(NAME): $(OBJ_FILES)
-	@echo "$(YELLOW)Linking executable...$(RESET)"
-	@$(CC) $(CFLAGS) -o $(NAME) $(OBJ_FILES) -lpthread
-	@echo "$(GREEN)Build complete: $(NAME)$(RESET)"
+$(NAME): $(OBJS)
+	$(MSG_BUILD)
+	@$(CC) $(CFLAGS) -o $(NAME) $(OBJS) -lpthread
+	$(MSG_DONE)
 
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c | $(OBJ_DIR)
-	@echo "$(YELLOW)Compiling $<...$(RESET)"
+$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+	@mkdir -p $(dir $@)
+	@echo "🧱 Compiling $<"
 	@$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
 
-$(OBJ_DIR):
-	@mkdir -p $(OBJ_DIR)
-
 clean:
-	@echo "$(YELLOW)Cleaning object files...$(RESET)"
+	$(MSG_CLEAN)
 	@rm -rf $(OBJ_DIR)
+	$(MSG_DONE)
 
 fclean: clean
-	@echo "$(YELLOW)Removing executable...$(RESET)"
+	$(MSG_FCLEAN)
 	@rm -f $(NAME)
+	$(MSG_DONE)
 
-re: fclean all
+re:
+	$(MSG_RE)
+	@$(MAKE) fclean
+	@$(MAKE) all
 
 .PHONY: all clean fclean re
