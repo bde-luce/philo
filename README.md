@@ -6,6 +6,21 @@ A multithreading and synchronization project in C based on the dining philosophe
 
 `philo` is a core project of the 42 curriculum. The goal of this project is to simulate the dining philosophers problem using threads and mutexes, while managing synchronization, timing, and shared resources correctly.
 
+## 🎯 Project Rules
+
+Philosophers sit at a round table with one fork between each pair.
+
+Each philosopher alternates between:
+- eating
+- sleeping
+- thinking
+
+To eat, a philosopher must take both forks. Since forks are shared between neighboring philosophers, the project focuses on synchronization, timing, and safe access to shared resources.
+
+If a philosopher does not eat within `time_to_die`, they die and the simulation stops.
+
+The simulation can also stop when each philosopher has eaten a required number of times, if that argument is provided.
+
 ## 🧩 What’s Included
 
 This project includes:
